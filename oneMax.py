@@ -1,6 +1,5 @@
-from deap import base
-from deap import creator
-from deap import tools
+from deap import base, creator, tools, algorithms
+import numpy as np
 
 import random
 import matplotlib.pyplot as plt
@@ -12,13 +11,13 @@ def oneMaxFitness(individual):
         PS : Fitness values in DEAP are tuples"""
     return sum(individual),
 
-ONE_MAX_LENGTH = 10 #individual bit length
+ONE_MAX_LENGTH = 100 #individual bit length
 
 #Genetic parameters
-POPULATION_SIZE = 10
+POPULATION_SIZE = 200
 P_CROOSOVER = 0.9
 P_MUTATION = 0.1
-GENERATIONS = 5
+GENERATIONS = 50
 
 def prepare_genetic_alg():
 
@@ -92,6 +91,22 @@ def generate_solution_man():
     plt.title('Max and Average fitness over Generations')
     plt.show()
 
+def generate_sol_auto():
+    """Same previous process using DEAP builtin functions"""
+    population = toolbox.populationCreator(n=POPULATION_SIZE) #register population
+    stats = tools.Statistics(lambda ind: ind.fitness.values) #register statistics
+    stats.register("max", np.max)
+    stats.register("avg", np.mean)
+    _, logbook = algorithms.eaSimple(population, toolbox, P_CROOSOVER, P_MUTATION, GENERATIONS, stats, verbose=True) #start algorithm
+    maxFitnessValues, meanFitnessValues = logbook.select("max", "avg")
+    plt.plot(maxFitnessValues, color='red')
+    plt.plot(meanFitnessValues, color='green')
+    plt.xlabel('Generation')
+    plt.ylabel('Max / Average Fitness')
+    plt.title('Max and Average fitness over Generations')
+    plt.show()
+
 if __name__ == "__main__":
     prepare_genetic_alg()
-    generate_solution_man()
+    # generate_solution_man()
+    generate_sol_auto()
