@@ -18,6 +18,7 @@ POPULATION_SIZE = 200
 P_CROOSOVER = 0.9
 P_MUTATION = 0.1
 GENERATIONS = 50
+HALL_OF_FAME_SIZE = 10
 
 def prepare_genetic_alg():
 
@@ -97,8 +98,11 @@ def generate_sol_auto():
     stats = tools.Statistics(lambda ind: ind.fitness.values) #register statistics
     stats.register("max", np.max)
     stats.register("avg", np.mean)
-    _, logbook = algorithms.eaSimple(population, toolbox, P_CROOSOVER, P_MUTATION, GENERATIONS, stats, verbose=True) #start algorithm
+    hof = tools.HallOfFame(HALL_OF_FAME_SIZE)
+    _, logbook = algorithms.eaSimple(population, toolbox, P_CROOSOVER, P_MUTATION, GENERATIONS, stats, halloffame=hof, verbose=True) #start algorithm
     maxFitnessValues, meanFitnessValues = logbook.select("max", "avg")
+    print("Hall of Fame Individuals = ", *hof.items, sep="\n")
+    print("Best Ever Individual = ", hof.items[0])    
     plt.plot(maxFitnessValues, color='red')
     plt.plot(meanFitnessValues, color='green')
     plt.xlabel('Generation')
